@@ -48,6 +48,14 @@ export class App extends Component {
         page: prevState.page + 1,
         loadMore: page < Math.ceil(post.total / per_page),
       }));
+
+      if (post.total === 0) {
+        Notiflix.Notify.failure(
+          'Sorry, there are no images matching your search query. Please try again.',
+          { position: 'center-center' }
+        );
+        return;
+      }
     } catch (error) {
       this.setState({ error: error.message });
       Notiflix.Notify.failure(
