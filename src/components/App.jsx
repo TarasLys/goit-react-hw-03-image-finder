@@ -14,6 +14,8 @@ export class App extends Component {
     error: null,
     searchPost: null,
     page: 1,
+    loadMore: false,
+    per_page: 12,
     modal: {
       isOpen: false,
       data: null,
@@ -36,14 +38,15 @@ export class App extends Component {
   };
 
   fetchAllPosts = async () => {
-    const { searchPost, page } = this.state;
+    const { searchPost, page, per_page } = this.state;
     try {
       this.setState({ isLoading: true });
       const post = await fetchPosts(searchPost, page);
 
       this.setState(prevState => ({
-        per: [...prevState.per, ...post],
+        per: [...prevState.per, ...post.images],
         page: prevState.page + 1,
+        loadMore: page < Math.ceil(post.total / per_page),
       }));
     } catch (error) {
       this.setState({ error: error.message });
@@ -75,9 +78,8 @@ export class App extends Component {
   };
 
   render() {
-    const { per, isLoading, error } = this.state;
+    const { per, error, loadMore } = this.state;
     const { data, isOpen } = this.state.modal;
-    const shouldRenderLoadMoreButton = per.length > 0 && !isLoading;
     return (
       <div
         style={{
@@ -91,10 +93,8 @@ export class App extends Component {
         {this.state.isLoading && <Loader />}
         {this.state.error && <p className="error">{error}</p>}
         {<ImageGallery images={per} onOpenModal={this.onOpenModal} />}
-        {isOpen && (
-          <Modal onCloseModal={this.onCloseModal} data={data} />
-        )}
-        {shouldRenderLoadMoreButton && <Button onClick={this.fetchAllPosts} />}
+        {isOpen && <Modal onCloseModal={this.onCloseModal} data={data} />}
+        {loadMore && <Button onClick={this.fetchAllPosts} />}
       </div>
     );
   }
