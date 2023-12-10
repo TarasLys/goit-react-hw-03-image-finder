@@ -75,8 +75,8 @@ export class App extends Component {
   };
 
   render() {
-    const { per, isLoading } = this.state;
-    const { data } = this.state.modal;
+    const { per, isLoading, error } = this.state;
+    const { data, isOpen } = this.state.modal;
     const shouldRenderLoadMoreButton = per.length > 0 && !isLoading;
     return (
       <div
@@ -89,9 +89,9 @@ export class App extends Component {
       >
         {<Searchbar onSubmit={this.onChangeQuery} />}
         {this.state.isLoading && <Loader />}
-        {this.state.error && <p className="error">{this.state.error}</p>}
+        {this.state.error && <p className="error">{error}</p>}
         {<ImageGallery images={per} onOpenModal={this.onOpenModal} />}
-        {this.state.modal.isOpen && (
+        {isOpen && (
           <Modal onCloseModal={this.onCloseModal} data={data} />
         )}
         {shouldRenderLoadMoreButton && <Button onClick={this.fetchAllPosts} />}
