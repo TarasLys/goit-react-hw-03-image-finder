@@ -23,7 +23,8 @@ export class App extends Component {
   };
 
   componentDidUpdate(_, prevState) {
-    if (prevState.searchPost !== this.state.searchPost) {
+    const { searchPost, page } = this.state;
+    if (prevState.searchPost !== searchPost || prevState.page !== page) {
       this.fetchAllPosts();
     }
   }
@@ -45,7 +46,6 @@ export class App extends Component {
 
       this.setState(prevState => ({
         per: [...prevState.per, ...post.images],
-        page: prevState.page + 1,
         loadMore: page < Math.ceil(post.total / per_page),
       }));
 
@@ -85,6 +85,14 @@ export class App extends Component {
     });
   };
 
+  onLoadMore = () => {
+    this.setState(prevState => {
+      return {
+        page: prevState.page + 1,
+      }
+    })
+  }
+
   render() {
     const { per, error, loadMore } = this.state;
     const { data, isOpen } = this.state.modal;
@@ -102,7 +110,7 @@ export class App extends Component {
         {this.state.error && <p className="error">{error}</p>}
         {<ImageGallery images={per} onOpenModal={this.onOpenModal} />}
         {isOpen && <Modal onCloseModal={this.onCloseModal} data={data} />}
-        {loadMore && <Button onClick={this.fetchAllPosts} />}
+        {loadMore && <Button onClick={this.onLoadMore} />}
       </div>
     );
   }
